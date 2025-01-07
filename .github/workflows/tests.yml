@@ -32,20 +32,7 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Start DynamoDB Local
-        run: docker run -d -p 8000:8000 amazon/dynamodb-local
-
-      - name: Wait for DynamoDB to become ready
-        run: |
-            until aws dynamodb list-tables --endpoint-url http://127.0.0.1:8000; do
-              echo "Waiting for local DynamoDB..."
-              sleep 1
-            done
-
-      - name: Create Rooms table for testing
-        run: node test/integration-tests/scripts/create-local-table.js
-      
-      - name: Set up env vars
+        - name: Set up env vars
         run: |
           echo "AWS_ACCESS_KEY_ID=FAKE_KEY" >> $GITHUB_ENV
           echo "AWS_SECRET_ACCESS_KEY=FAKE_SECRET" >> $GITHUB_ENV
@@ -58,6 +45,18 @@ jobs:
           echo "HOTEL_NAME=AWS App Runner Hotel" >> $GITHUB_ENV
           echo "CI=true" >> $GITHUB_ENV
 
+      - name: Start DynamoDB Local
+        run: docker run -d -p 8000:8000 amazon/dynamodb-local
+
+      - name: Wait for DynamoDB to become ready
+        run: |
+            until aws dynamodb list-tables --endpoint-url http://127.0.0.1:8000; do
+              echo "Waiting for local DynamoDB..."
+              sleep 1
+            done
+
+      - name: Create Rooms table for testing
+        run: node test/integration-tests/scripts/create-local-table.js
 
       - name: Start server
         run: |

@@ -35,6 +35,9 @@ jobs:
       - name: Start DynamoDB Local
         run: docker run -d -p 8000:8000 amazon/dynamodb-local
 
+      - name: Create Rooms table for testing
+        run: node scripts/create-local-table.js
+      
       - name: Set up env vars
         run: |
           echo "AWS_ACCESS_KEY_ID=FAKE_KEY" >> $GITHUB_ENV

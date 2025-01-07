@@ -7,7 +7,10 @@ const config = require("../config"); // Correctly importing config
 const { DynamoDBClient, ScanCommand } = require("@aws-sdk/client-dynamodb");
 
 // Initialize DynamoDB Client
-const dynamoClient = new DynamoDBClient({ region: config.infra.region });
+const dynamoClient = new DynamoDBClient({
+  region: config.infra.region,
+  endpoint: config.infra.dynamodb_endpoint,
+});
 
 router.get("/", async (req, res, next) => {
   const params = {

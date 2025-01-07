@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 3 * * *'  # Runs nightly at 3 AM UTC
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Start DynamoDB Local
+        run: docker run -d -p 8000:8000 amazon/dynamodb-local
+
+      - name: Set up env vars
+        run: |
+            echo "AWS_ACCESS_KEY_ID=FAKE_KEY" >> $GITHUB_ENV
+            echo "AWS_SECRET_ACCESS_KEY=FAKE_SECRET" >> $GITHUB_ENV
+            echo "DYNAMODB_REGION=us-west-2" >> $GITHUB_ENV
+            # Dynamodb local is on localhost:8000
+            echo "DYNAMODB_ENDPOINT=http://127.0.0.1:8000" >> $GITHUB_ENV
+            echo "DYNAMODB_TABLE_NAME=RoomsTest" >> $GITHUB_ENV
+
+      # 3) Run your tests, which should now connect to Local
+      - name: Run tests
+        run: npm run unit-test

@@ -75,6 +75,6 @@ jobs:
         id: unit-test-report
         if: success() || failure()
         with:
-            name: Unit Tests
+            name: Unit Tests Report
             path: junit.xml
             reporter: jest-junit

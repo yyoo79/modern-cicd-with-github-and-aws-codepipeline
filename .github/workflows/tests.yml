@@ -34,10 +34,10 @@ jobs:
 
       - name: Set up env vars
         run: |
-          echo "AWS_ACCESS_KEY_ID=FAKE_KEY" >> $GITHUB_ENV
-          echo "AWS_SECRET_ACCESS_KEY=FAKE_SECRET" >> $GITHUB_ENV
-          echo "AWS_REGION=us-west-2" >> $GITHUB_ENV
-          echo "AWS_DEFAULT_REGION=us-west-2" >> $GITHUB_ENV
+          echo "AWS_ACCESS_KEY_ID=fakeMyKeyId" >> $GITHUB_ENV
+          echo "AWS_SECRET_ACCESS_KEY=fakeSecretAccessKey" >> $GITHUB_ENV
+          echo "AWS_REGION=fakeRegion" >> $GITHUB_ENV
+          echo "AWS_DEFAULT_REGION=fakeRegion" >> $GITHUB_ENV
           echo "DYNAMODB_ENDPOINT=http://127.0.0.1:8000" >> $GITHUB_ENV
           echo "DYNAMODB_TABLE_NAME=RoomsTest" >> $GITHUB_ENV
           # IMPORTANT: Make sure this matches the port your Express app uses

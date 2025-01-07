@@ -78,3 +78,12 @@ jobs:
             name: Unit Tests Report
             path: junit.xml
             reporter: jest-junit
+
+      - name: Integration Test Report
+        uses: phoenix-actions/test-reporting@v8
+        id: integration-test-report
+        if: success() || failure()
+        with:
+            name: Integration Test Report
+            path: integration-test-report.xml
+            reporter: jest-junit

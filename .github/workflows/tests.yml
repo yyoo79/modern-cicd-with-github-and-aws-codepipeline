@@ -44,6 +44,7 @@ jobs:
           echo "DYNAMODB_TABLE_NAME=RoomsTest" >> $GITHUB_ENV
           # IMPORTANT: Make sure this matches the port your Express app uses
           echo "BASE_URL=http://localhost:8081" >> $GITHUB_ENV
+          echo "HOTEL_NAME=AWS App Runner Hotel" >> $GITHUB_ENV
           echo "CI=true" >> $GITHUB_ENV
 
 

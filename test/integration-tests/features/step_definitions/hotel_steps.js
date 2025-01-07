@@ -1,6 +1,6 @@
 const { setDefaultTimeout, Given, When, Then, After } = require('@cucumber/cucumber');
 const { Builder, By, until } = require('selenium-webdriver');
-const chrome = require('selenium-webdriver/chrome'); // <-- Add this import
+const chrome = require('selenium-webdriver/chrome');
 const { openHomepage, verifyHomepageElements } = require('./helpers/homepageHelper');
 const {
   openAddRoomPage,
@@ -36,12 +36,13 @@ const buildDriver = async () => {
     let options = new chrome.Options();
 
     if (process.env.CI) {
-      // Running in CI: add headless flags
-      options = options
-        .headless()
-        .addArguments('--disable-gpu')
-        .addArguments('--no-sandbox')
-        .addArguments('--disable-dev-shm-usage');
+      console.log('Running in CI, enabling headless mode for Chrome');
+      options.addArguments(
+        '--headless',             // Run in headless mode
+        '--disable-gpu',
+        '--no-sandbox',
+        '--disable-dev-shm-usage'
+      );
     }
 
     driver = await new Builder()
@@ -63,70 +64,70 @@ Given('I am on the homepage', async function () {
 });
 
 Then('I should see the page title {string}', async function (title) {
-  await verifyHomepageElements(driver, 'title', title); // Use helper function to verify the title
+  await verifyHomepageElements(driver, 'title', title); // Use helper function
 });
 
 Then('I should see a navbar with {string}, {string}, and {string} options', async function (home, rooms, add) {
-  await verifyHomepageElements(driver, 'navbar'); // Use helper function to verify the navbar
+  await verifyHomepageElements(driver, 'navbar');
 });
 
 Then('I should see the heading {string}', async function (headingText) {
-  await verifyHomepageElements(driver, 'heading', headingText); // Use helper function to verify the heading
+  await verifyHomepageElements(driver, 'heading', headingText);
 });
 
 When('I click on {string} in the navbar', async function (linkText) {
-  if (linkText === "Rooms") {
-    await openRoomsPage(driver); // Use helper to open the Rooms page
-  } else if (linkText === "Add") {
-    await openAddRoomPage(driver); // Use helper to open the Add Room page
+  if (linkText === 'Rooms') {
+    await openRoomsPage(driver);
+  } else if (linkText === 'Add') {
+    await openAddRoomPage(driver);
   } else {
     throw new Error(`Link text ${linkText} is not supported.`);
   }
 });
 
 Then('I should be on the {string} page', async function (pageTitle) {
-  await verifyRoomList(driver, 'title', pageTitle); // Use helper function to verify the page title
+  await verifyRoomList(driver, 'title', pageTitle);
 });
 
 Then('I should see a table with the list of rooms', async function () {
-  await verifyRoomList(driver, 'room_table'); // Use helper function to verify room table is present
+  await verifyRoomList(driver, 'room_table');
 });
 
-Then('the table should contain columns for {string}, {string}, and {string}', async function (column1, column2, column3) {
-  await verifyTableColumns(driver); // Use helper function to verify table columns
+Then('the table should contain columns for {string}, {string}, and {string}', async function (c1, c2, c3) {
+  await verifyTableColumns(driver);
 });
 
 When('I enter {string} in the {string} field', async function (value, fieldName) {
-  if (fieldName === "Room number") {
-    await fillAddRoomForm(driver, "room_number", value);
-  } else if (fieldName === "Floor number") {
-    await fillAddRoomForm(driver, "floor_number", value);
+  if (fieldName === 'Room number') {
+    await fillAddRoomForm(driver, 'room_number', value);
+  } else if (fieldName === 'Floor number') {
+    await fillAddRoomForm(driver, 'floor_number', value);
   } else {
     throw new Error(`Unsupported field name: ${fieldName}`);
   }
 });
 
 When('I select {string} from the "Good View" dropdown', async function (value) {
-  await fillAddRoomForm(driver, "good_view", value);
+  await fillAddRoomForm(driver, 'good_view', value);
 });
 
 When('I click the "Add room" button', async function () {
-  await fillAddRoomForm(driver, "submit");
+  await fillAddRoomForm(driver, 'submit');
 });
 
 Then('the new room should be added successfully', async function () {
   await verifyAddRoomSuccess(driver);
 });
 
-Then('I should see a room with the room number {string}, on floor {string}, with {string} under Good View', async function (roomNumber, floorNumber, viewStatus) {
-  await verifyRoomDetails(driver, roomNumber, floorNumber, viewStatus);
+Then('I should see a room with the room number {string}, on floor {string}, with {string} under Good View', async function (rNumber, fNumber, viewStatus) {
+  await verifyRoomDetails(driver, rNumber, fNumber, viewStatus);
 });
 
 Then('I should see an alert displaying the number of rooms stored in the database', async function () {
   await verifyRoomsStoredAlert(driver);
 });
 
-Then('I should see a form with fields for {string}, {string}, and {string}', { timeout: 20000 }, async function (field1, field2, field3) {
+Then('I should see a form with fields for {string}, {string}, and {string}', { timeout: 20000 }, async function (f1, f2, f3) {
   await verifyAddRoomFormFields(driver);
 });
 

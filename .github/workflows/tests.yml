@@ -1,4 +1,4 @@
-name: CI
+name: Unit and Integration testing
 
 on:
   workflow_dispatch:
@@ -18,21 +18,43 @@ jobs:
         with:
           node-version: 22
 
+      # 1) Install Chrome so Selenium can run
+      - name: Install Chrome
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y chromium-browser
+
       - name: Install dependencies
         run: npm install
 
+      # 2) Spin up DynamoDB local on port 8000
       - name: Start DynamoDB Local
         run: docker run -d -p 8000:8000 amazon/dynamodb-local
 
+      # 3) Set environment vars so the AWS SDK points to local DynamoDB
       - name: Set up env vars
         run: |
-            echo "AWS_ACCESS_KEY_ID=FAKE_KEY" >> $GITHUB_ENV
-            echo "AWS_SECRET_ACCESS_KEY=FAKE_SECRET" >> $GITHUB_ENV
-            echo "DYNAMODB_REGION=us-west-2" >> $GITHUB_ENV
-            # Dynamodb local is on localhost:8000
-            echo "DYNAMODB_ENDPOINT=http://127.0.0.1:8000" >> $GITHUB_ENV
-            echo "DYNAMODB_TABLE_NAME=RoomsTest" >> $GITHUB_ENV
+          echo "AWS_ACCESS_KEY_ID=FAKE_KEY" >> $GITHUB_ENV
+          echo "AWS_SECRET_ACCESS_KEY=FAKE_SECRET" >> $GITHUB_ENV
+          echo "AWS_REGION=us-west-2" >> $GITHUB_ENV
+          echo "DYNAMODB_ENDPOINT=http://127.0.0.1:8000" >> $GITHUB_ENV
+          echo "DYNAMODB_TABLE_NAME=RoomsTest" >> $GITHUB_ENV
+          # IMPORTANT: Make sure this matches the port your Express app uses
+          # If your app listens on 8081, set this to http://localhost:8081
+          echo "BASE_URL=http://localhost:3000" >> $GITHUB_ENV
 
-      # 3) Run your tests, which should now connect to Local
-      - name: Run tests
+      # 4) Start your Express app in the background
+      #    By default your "npm start" runs on port 3000 or 8081—adjust sleep time as necessary
+      - name: Start server
+        run: |
+          npm start &
+          # Give the server a few seconds to spin up before running tests
+          sleep 5
+
+      # 5) Run your Jest-based unit tests
+      - name: Run unit tests
         run: npm run unit-test
+
+      # 6) Run your Selenium + Cucumber integration tests
+      - name: Run integration tests
+        run: npm run integration-tests

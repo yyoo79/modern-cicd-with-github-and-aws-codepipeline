@@ -35,6 +35,13 @@ jobs:
       - name: Start DynamoDB Local
         run: docker run -d -p 8000:8000 amazon/dynamodb-local
 
+      - name: Wait for DynamoDB to become ready
+        run: |
+            until aws dynamodb list-tables --endpoint-url http://127.0.0.1:8000; do
+              echo "Waiting for local DynamoDB..."
+              sleep 1
+            done
+
       - name: Create Rooms table for testing
         run: node test/integration-tests/scripts/create-local-table.js
       
@@ -62,3 +69,12 @@ jobs:
 
       - name: Run integration tests
         run: npm run integration-tests
+
+      - name: Unit Test Report
+        uses: phoenix-actions/test-reporting@v8
+        id: unit-test-report
+        if: success() || failure()
+        with:
+            name: Unit Tests
+            path: junit.xml
+            reporter: jest-junit
